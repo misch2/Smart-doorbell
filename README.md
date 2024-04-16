@@ -1,12 +1,14 @@
 # Smart doorbell
 
-This is a simple-yet-effective upgrade for an ordinary analog doorbell with 12 V control signals like [this one](https://www.czechphone.cz/admin/documents/manual-navod:-dt-verona-16a-bz--mb.pdf). The *original* doorbell is very simple: it can ring (using a mechanical vibrating ringer), it allows two way voice communication and it can open the building door using a solenoid.
+A simple-yet-effective upgrade for an ordinary analog doorbell with 12 V control signals like [this one](https://www.czechphone.cz/admin/documents/manual-navod:-dt-verona-16a-bz--mb.pdf). The *original* doorbell is very simple: it can ring (using a mechanical vibrating ringer), it allows two way voice communication and it can open the building door using a solenoid.
 
 This project has following goals (with a minimal changes to the existing system):
 
  - Pass the ring signal to the Home Assistant for further automations
  - Distinguish between two sources of signal (appartment door vs building door)
  - Activate the solenoid to open the door
+
+I wanted this automation because I'm often wearing noise cancelling headphones at home and I then don't hear when package delivery man is trying to reach us. With HA automation I now receive a Telegram notification on my phone and smart watch in such situations. And I can now open the building door by a touch of virtual HA button, without grabbing my keys, which is *cool*.
 
 The implementation consists of 4 parts:
 
