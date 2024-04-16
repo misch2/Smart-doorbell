@@ -1,0 +1,129 @@
+substitutions:
+  devicename: "doorbell"
+  friendlyname: "Doorbell"
+  # ESP32C3 super mini
+  board: seeed_xiao_esp32c3
+
+packages:
+  esphome: !include include/esphome.yaml
+  base: !include include/base.yaml
+  wifi: !include include/wifi.yaml
+  webserver: !include include/webserver.yaml
+  external_components: !include include/external_components.yaml
+  sensors: !include include/common_sensors_and_controls.yaml
+
+
+# -------------------------------------------------
+# Individual board settings:
+
+
+# Doorbell appliance (similar to the https://www.czechphone.cz/admin/documents/manual-navod:-dt-verona-16a-bz--mb.pdf)
+#
+# 4   3   6   2   Z   sk
+# |   |   |   |   |   |__ GND2?       \___ short these together to open the door (one of these is GND?)
+# |   |   |   |   |______ OpenTheDoor /
+# |   |   |   |__________ MIC 
+# |   |   |______________ SPK
+# |   |__________________ GND
+# |______________________ RING (fromOutside, 2 signals merged together)
+#
+#
+
+# Wire colours and connections
+# 
+#      ______ (black)  = GND
+#     |  ____ (red)    = 5V
+#     | |  __ (yellow) = fromESP: GPIO5, door opener signal 
+#     | | |
+#     X X X
+#    [ RELAY ]
+#       X X
+#       | |__ toWallPhone: door opener
+#       |____ toWallPhone: door opener
+#
+#
+#      ________ white  = fromWallPhone: ringing indicator #1 (appartment door)
+#     |  ______ green  = fromWallPhone: ringing indicator #2 (building door)
+#     | |  ____ blue   = toWallPhone: ringing
+#     | | |  __ yellow = toWallPhone: GND
+#     | | | |
+#     X X X X
+#    [ CONTROL_BOARD ]
+
+sensor:
+  - platform: pulse_meter
+    pin: 
+      number: GPIO5
+      mode:
+        input: true
+        pulldown: true
+    name: "Pulse meter 1"
+    ## No, 10 ms is still too long for reliable detection. Real pulses are probably much shorter:
+    # internal_filter: 10ms
+    internal_filter_mode: PULSE
+    # Timeout = how long does it take between "no pulses" state on input for the output to become 0.
+    timeout: 0.5s
+    unit_of_measurement: "Hz"
+    accuracy_decimals: 0
+    filters:
+      # Convert from pulses/min to pulses/sec.
+      # Beware, use '.0' notation to calculate everything as floats!
+      - lambda: return x / 60.0;
+      # Do not overload the HA with a lot of fast changing values per second:
+      # 4 values per second should be precise enough to measure the duration of ringing
+      - throttle_average: 0.25s
+      # Filter out the "NaN" values produced by the `throttle_average` filter when no values have been received
+      - filter_out: nan
+  - platform: pulse_meter
+    pin: 
+      number: GPIO6
+      mode:
+        input: true
+        pulldown: true
+    name: "Pulse meter 2"
+    ## No, 10 ms is still too long for reliable detection. Real pulses are probably much shorter:
+    # internal_filter: 10ms
+    internal_filter_mode: PULSE
+    # Timeout = how long does it take between "no pulses" state on input for the output to become 0.
+    timeout: 0.5s
+    unit_of_measurement: "Hz"
+    accuracy_decimals: 0
+    filters:
+      # Convert from pulses/min to pulses/sec.
+      # Beware, use '.0' notation to calculate everything as floats!
+      - lambda: return x / 60.0;
+      # Do not overload the HA with a lot of fast changing values per second:
+      # 4 values per second should be precise enough to measure the duration of ringing
+      - throttle_average: 0.25s
+      # Filter out the "NaN" values produced by the `throttle_average` filter when no values have been received
+      - filter_out: nan
+
+switch:
+  - platform: gpio
+    id: physical_door_open_solenoid
+    icon: "mdi:door"
+    disabled_by_default: true
+    restore_mode: ALWAYS_OFF
+    pin: 
+      number: GPIO4
+      mode:
+        output: true
+    on_turn_on:
+      then:
+        - delay: 2500ms
+        - switch.turn_off: physical_door_open_solenoid
+  
+button:
+  - platform: template
+    id: door_open
+    name: "Door opener"
+    icon: "mdi:door"
+    on_press: 
+      then:
+        - switch.turn_on: physical_door_open_solenoid
+
+# logger:
+#   level: DEBUG
+
+# End of individual board setting
+# -------------------------------------------------

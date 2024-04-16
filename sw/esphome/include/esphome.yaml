@@ -1,0 +1,3 @@
+esphome:
+  name: $devicename
+  friendly_name: $friendlyname

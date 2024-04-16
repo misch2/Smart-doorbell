@@ -1,0 +1,23 @@
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  #power_save_mode: none
+  fast_connect: true
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: WiFi IP Address
+    dns_address:
+      name: WiFi DNS Address
+    # Not needed, it's already in device information (top left corner in HA integration)
+    #mac_address:
+    #  name: WiFi MAC Address
+    #
+    # Not useful here with fixed SSID:
+    #scan_results:
+    #  name: WiFi Latest Scan Results
+    #ssid:
+    #  name: WiFi Connected SSID
+    #bssid:
+    #  name: WiFi Connected BSSID

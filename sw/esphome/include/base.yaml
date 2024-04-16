@@ -1,0 +1,16 @@
+esp32:
+  board: $board
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret homeassistant_api_key
+
+ota:
+  password: !secret ota_password
+
+improv_serial:
+
+logger:
+  level: WARN
+

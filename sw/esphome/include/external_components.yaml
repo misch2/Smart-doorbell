@@ -1,0 +1,4 @@
+external_components:
+  - source: github://TheStaticTurtle/esphome_syslog
+    components: [syslog]
+

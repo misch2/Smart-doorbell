@@ -1,0 +1,34 @@
+sensor:
+  - platform: wifi_signal
+    name: "WiFi RSSI"
+  - platform: internal_temperature
+    name: "Internal Chip Temperature"
+  - platform: uptime
+    name: "Uptime"
+
+#switch:
+button:
+  - platform: restart
+    name: "Restart"
+#  - platform: safe_mode
+#    name: Safe Mode Boot
+#    entity_category: diagnostic
+
+# Show the API connnection status of ESP
+binary_sensor:
+  - platform: status
+    name: "API connection status"
+
+syslog:
+  ip_address: !secret syslog_server
+  port: 514
+
+#debug:
+#  update_interval: 3600s
+#
+#text_sensor:
+#  - platform: debug
+#    device:
+#      name: "Device Info"
+#    reset_reason:
+#      name: "Reset Reason"
