@@ -27,12 +27,13 @@ The implementation consists of 4 parts:
 
 ### PCB
 
-[PDF Schematic](hw/schematic.pdf)
-[Gerber file](hw/gerber.zip)
+* [PDF Schematic](hw/schematic.pdf)
+* [Gerber file](hw/gerber.zip)
 
 ## ESPHome software
 
-See [this YAML](sw/esphome/doorbell.yaml) for ESPHome
+See [this YAML](sw/esphome/doorbell.yaml) for ESPHome. It uses "pulse meter" component to detect any possible ring signal. If the result is around 50 Hz then it's what we are looking for.
+It also uses a GPIO switch with a fixed 1.5 second timer to activate the door solenoid on demand.
 
 ## HomeAssistant automations 
 
